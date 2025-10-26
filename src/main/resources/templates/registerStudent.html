@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <title>受講生登録</title>
+</head>
+<body>
+<h1>受講生登録</h1>
+<form th:action="@{/register-student}" th:object="${studentDetail}" method="post">
+  <div>
+    <label for="name">名前:</label>
+    <input type="text" id="name" th:field="*{student.name}" required />
+  </div>
+  <div>
+    <label for="nameKana">カナ名:</label>
+    <input type="text" id="nameKana" th:field="*{student.nameKana}" required />
+  </div>
+  <div>
+    <label for="nickname">ニックネーム:</label>
+    <input type="text" id="nickname" th:field="*{student.nickname}" />
+  </div>
+  <div>
+    <label for="email">メールアドレス:</label>
+    <input type="text" id="email" th:field="*{student.email}" required />
+  </div>
+  <div>
+    <label for="area">地域:</label>
+    <input type="text" id="area" th:field="*{student.area}" required />
+  </div>
+  <div>
+    <label for="birthDate">生年月日:</label>
+    <input type="text" id="birthDate" th:field="*{student.birthDate}"
+           pattern="\d{4}-\d{2}-\d{2}" placeholder="2010-11-15" required />
+  </div>
+  <div>
+    <label>性別:</label>
+    <label><input type="radio" th:field="*{student.gender}" value="男性" />男性</label>
+    <label><input type="radio" th:field="*{student.gender}" value="女性" />女性</label>
+    <label><input type="radio" th:field="*{student.gender}" value="その他" />その他</label>
+  </div>
+  <div>
+    <label for="remark">備考:</label>
+    <input type="text" id="remark" th:field="*{student.remark}" />
+  </div>
+  <div th:each="course, stat : *{studentCourses}">
+    <label for="courseName" th:for="studentCourse.__${stat.index}__.courseName">受講コース名:</label>
+    <select id="courseName" th:id="studentCourse.__${stat.index}__.courseName" th:field="*{studentCourses[__${stat.index}__].courseName}">
+      <option value="">-- コースを選択してください --</option>
+      <option value="HTML/CSS/JavaScriptコース">HTML/CSS/JavaScriptコース</option>
+      <option value="Javaコース">Javaコース</option>
+      <option value="SQLコース">SQLコース</option>
+      <option value="AWSコース">AWSコース</option>
+      <option value="Pythonコース">Pythonコース</option>
+    </select>
+  </div>
+  <div>
+    <button type="submit">登録</button>
+  </div>
+</form>
+</body>
+</html>
