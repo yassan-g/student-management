@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
@@ -15,6 +16,7 @@ public class Student {
   private String nickname;
   private String email;
   private String area;
+  @DateTimeFormat(pattern = "yyyy/MM/dd")
   private LocalDate birthDate;
   private String gender;
   private String remark;
