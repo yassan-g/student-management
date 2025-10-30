@@ -5,6 +5,7 @@
 </head>
 <body>
 <h1>受講生情報一覧</h1>
+<div th:if="${message}" style="background-color: LightGreen; color: DarkGreen; padding: 5px;" th:text="${message}"></div>
 <table border="1">
   <thead>
   <tr>
@@ -22,12 +23,14 @@
   <tbody>
   <tr th:each="studentDetail : ${students}">
     <td th:text="${studentDetail.student.id}">1</td>
-    <td th:text="${studentDetail.student.name}">山田太郎</td>
+    <td>
+      <a th:href="@{/student/{id}(id=${studentDetail.student.id})}" th:text="${studentDetail.student.name}">山田太郎</a>
+    </td>
     <td th:text="${studentDetail.student.nameKana}">ヤマダタロウ</td>
     <td th:text="${studentDetail.student.nickname}">タロー</td>
     <td th:text="${studentDetail.student.email}">taro@example.com</td>
     <td th:text="${studentDetail.student.area}">東京都足立区</td>
-    <td th:text="${studentDetail.student.birthDate}">2010-12-17</td>
+    <td th:text="${#temporals.format(studentDetail.student.birthDate, 'yyyy/MM/dd')}">2010/12/17</td>
     <td th:text="${studentDetail.student.gender}">男性</td>
     <td th:text="${studentDetail.student.remark}">特になし</td>
   </tr>

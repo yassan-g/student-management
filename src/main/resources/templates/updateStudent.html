@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
-  <title>受講生登録</title>
+  <title>受講生詳細</title>
 </head>
 <body>
-<h1>受講生登録</h1>
-<div th:if="${errorMessage}" style="color: red;">
-  <p th:text="${errorMessage}"></p>
-</div>
-<form th:action="@{/register-student}" th:object="${studentDetail}" method="post">
+<h1>受講生詳細</h1>
+<form th:action="@{/update-student}" th:object="${studentDetail}" method="post">
+  <input type="hidden" th:field="*{student.id}" />
   <div>
     <label for="name">名前:</label>
     <input type="text" id="name" th:field="*{student.name}" required />
@@ -31,7 +29,8 @@
   </div>
   <div>
     <label for="birthDate">生年月日:</label>
-    <input type="date" id="birthDate" th:field="*{student.birthDate}" required />
+    <input type="text" id="birthDate" th:field="*{student.birthDate}"
+           placeholder="例: 2010/06/09" pattern="\d{4}/\d{2}/\d{2}" required />
   </div>
   <div>
     <label>性別:</label>
@@ -45,6 +44,8 @@
   </div>
   <!-- 受講コース情報 -->
   <div th:each="course, stat : *{studentCourses}">
+    <input type="hidden" th:field="*{studentCourses[__${stat.index}__].id}" />
+    <input type="hidden" th:field="*{studentCourses[__${stat.index}__].studentId}" />
     <label th:for="'courseName' + ${stat.index}">受講コース名:</label>
     <select th:id="'courseName' + ${stat.index}" th:field="*{studentCourses[__${stat.index}__].courseName}">
       <option value="">-- コースを選択してください --</option>
@@ -54,9 +55,13 @@
       <option value="AWSコース">AWSコース</option>
       <option value="Pythonコース">Pythonコース</option>
     </select>
+    <label th:for="'startDate' + ${stat.index}">受講開始日:</label>
+    <input type="text" th:id="'startDate' + ${stat.index}" th:field="*{studentCourses[__${stat.index}__].startDate}" readonly />
+    <label th:for="'expectedEndDate' + ${stat.index}">受講終了予定日:</label>
+    <input type="text" th:id="'expectedEndDate' + ${stat.index}" th:field="*{studentCourses[__${stat.index}__].expectedEndDate}" readonly />
   </div>
   <div>
-    <button type="submit">登録</button>
+    <button type="submit">更新</button>
   </div>
 </form>
 </body>
