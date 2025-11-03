@@ -57,4 +57,12 @@ public interface StudentRepository {
   @Update("UPDATE students_courses SET course_name = #{courseName}, expected_end_date = #{expectedEndDate} WHERE id = #{id} AND student_id = #{studentId}")
   void updateStudentCourse(StudentCourse studentCourse);
 
+  // 受講生情報を削除する
+  @Update("UPDATE students SET is_deleted = TRUE WHERE id = #{id}")
+  int logicalDeleteStudent(Integer id);
+
+  // 受講生情報を復元する
+  @Update("UPDATE students SET is_deleted = FALSE WHERE id = #{id}")
+  int restoreStudent(Integer id);
+
 }

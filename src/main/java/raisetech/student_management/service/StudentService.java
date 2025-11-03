@@ -91,4 +91,22 @@ public class StudentService {
     }
   }
 
+  // 受講生情報削除処理
+  @Transactional
+  public void deleteStudent(Integer id) {
+    int deleted = studentRepository.logicalDeleteStudent(id);
+    if (deleted == 0) {
+      throw new IllegalArgumentException("指定されたIDの受講生が存在しません：" + id);
+    }
+  }
+
+  // 受講生情報復元処理
+  @Transactional
+  public void restoreStudent(Integer id) {
+    int restored = studentRepository.restoreStudent(id);
+    if (restored == 0) {
+      throw new IllegalArgumentException("指定されたIDの受講生が存在しません：" + id);
+    }
+  }
+
 }
