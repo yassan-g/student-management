@@ -90,4 +90,28 @@ public class StudentController {
     return "redirect:/students";
   }
 
+  // 受講生情報削除処理
+  @PostMapping("/students/{id}/delete")
+  public String deleteStudent(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    try {
+      studentService.deleteStudent(id);
+      redirectAttributes.addFlashAttribute("message", "削除が完了しました。");
+    } catch (IllegalArgumentException e) {
+      redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+    }
+    return "redirect:/students";
+  }
+
+  // 受講生情報復元処理
+  @PostMapping("/students/{id}/restore")
+  public String restoreStudent(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    try {
+      studentService.restoreStudent(id);
+      redirectAttributes.addFlashAttribute("message", "復元が完了しました。");
+    } catch (IllegalArgumentException e) {
+      redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+    }
+    return "redirect:/students";
+  }
+
 }
