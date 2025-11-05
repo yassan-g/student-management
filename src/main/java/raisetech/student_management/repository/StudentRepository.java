@@ -37,7 +37,7 @@ public interface StudentRepository {
   List<StudentCourse> findCoursesByStudentId(Integer studentId);
 
   // 受講生情報を登録する
-  @Insert("INSERT INTO students(name, name_kana, nickname, email, area, birth_date, gender, remark, is_deleted)"
+  @Insert("INSERT INTO students(name, name_kana, nickname, email, area, birth_date, gender, remark, deleted)"
       + "VALUES(#{name}, #{nameKana}, #{nickname}, #{email}, #{area}, #{birthDate}, #{gender}, #{remark}, false)")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudent(Student student);
@@ -50,7 +50,7 @@ public interface StudentRepository {
 
   // 受講生情報を更新する
   @Update("UPDATE students SET name = #{name}, name_kana = #{nameKana}, nickname = #{nickname}, email = #{email},"
-      + "area = #{area}, birth_date = #{birthDate}, gender = #{gender}, remark = #{remark}, is_deleted = #{isDeleted} WHERE id = #{id}")
+      + "area = #{area}, birth_date = #{birthDate}, gender = #{gender}, remark = #{remark}, deleted = #{deleted} WHERE id = #{id}")
   void updateStudent(Student student);
 
   // 受講コース情報を更新する
