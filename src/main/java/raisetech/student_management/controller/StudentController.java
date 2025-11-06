@@ -2,13 +2,15 @@ package raisetech.student_management.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import raisetech.student_management.controller.converter.StudentConverter;
 import raisetech.student_management.data.Student;
@@ -16,7 +18,7 @@ import raisetech.student_management.data.StudentCourse;
 import raisetech.student_management.domain.StudentDetail;
 import raisetech.student_management.service.StudentService;
 
-@Controller
+@RestController
 public class StudentController {
 
   private final StudentService studentService;
@@ -29,11 +31,10 @@ public class StudentController {
 
   // 受講生情報一覧画面表示
   @GetMapping("/students")
-  public String getStudents(Model model) {
+  public List<StudentDetail> getStudents() {
     List<Student> students = studentService.searchStudents();
     List<StudentCourse> studentCourses = studentService.searchStudentCourses();
-    model.addAttribute("students", studentConverter.convertStudentDetails(students, studentCourses));
-    return "students.html";
+    return studentConverter.convertStudentDetails(students, studentCourses);
   }
 
   // 受講生情報登録画面表示
@@ -80,14 +81,9 @@ public class StudentController {
 
   //  受講生詳細更新処理
   @PostMapping("/update-student")
-  public String updateStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result,
-      RedirectAttributes redirectAttributes) {
-    if (result.hasErrors()) {
-      return "updateStudent.html";
-    }
+  public ResponseEntity<StudentDetail> updateStudent(@RequestBody StudentDetail studentDetail) {
     studentService.updateStudent(studentDetail);
-    redirectAttributes.addFlashAttribute("message", "更新が完了しました。");
-    return "redirect:/students";
+    return ResponseEntity.ok(studentDetail);
   }
 
   // 受講生情報削除処理

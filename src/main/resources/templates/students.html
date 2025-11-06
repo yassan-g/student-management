@@ -26,11 +26,11 @@
     <td th:text="${studentDetail.student.id}">1</td>
     <!-- 削除済みでない場合はリンク表示 -->
     <td>
-      <a th:if="${!studentDetail.student.isDeleted}"
+      <a th:if="${!studentDetail.student.deleted}"
          th:href="@{/student/{id}(id=${studentDetail.student.id})}" th:text="${studentDetail.student.name}">山田太郎</a>
     <!-- 削除済みの場合はリンク非表示 -->
-      <span th:if="${studentDetail.student.isDeleted}" th:text="${studentDetail.student.name}">山田太郎</span>
-      <span th:if="${studentDetail.student.isDeleted}" style="color: gray;">（削除済み）</span>
+      <span th:if="${studentDetail.student.deleted}" th:text="${studentDetail.student.name}">山田太郎</span>
+      <span th:if="${studentDetail.student.deleted}" style="color: gray;">（削除済み）</span>
     </td>
     <td th:text="${studentDetail.student.nameKana}">ヤマダタロウ</td>
     <td th:text="${studentDetail.student.nickname}">タロー</td>
@@ -40,10 +40,10 @@
     <td th:text="${studentDetail.student.gender}">男性</td>
     <td th:text="${studentDetail.student.remark}">特になし</td>
     <td>
-      <form th:if="${!studentDetail.student.isDeleted}" th:action="@{/students/{id}/delete(id=${studentDetail.student.id})}" method="post">
+      <form th:if="${!studentDetail.student.deleted}" th:action="@{/students/{id}/delete(id=${studentDetail.student.id})}" method="post">
         <button type="submit">削除</button>
       </form>
-      <form th:if="${studentDetail.student.isDeleted}" th:action="@{/students/{id}/restore(id=${studentDetail.student.id})}" method="post">
+      <form th:if="${studentDetail.student.deleted}" th:action="@{/students/{id}/restore(id=${studentDetail.student.id})}" method="post">
         <button type="submit">復元</button>
       </form>
     </td>
