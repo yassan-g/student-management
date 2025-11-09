@@ -4,44 +4,60 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import raisetech.student_management.controller.converter.StudentConverter;
 import raisetech.student_management.data.Student;
 import raisetech.student_management.data.StudentCourse;
 import raisetech.student_management.domain.StudentDetail;
 import raisetech.student_management.repository.StudentRepository;
 
+/**
+ * 受講生情報を取り扱うService
+ * 受講生情報の検索や登録、更新処理などを行う
+ */
 @Service
 public class StudentService {
 
   private final StudentRepository studentRepository;
+  private final StudentConverter studentConverter;
 
-  public StudentService(StudentRepository studentRepository) {
+  public StudentService(StudentRepository studentRepository, StudentConverter studentConverter) {
     this.studentRepository = studentRepository;
+    this.studentConverter = studentConverter;
   }
 
-  // 受講生情報全件取得処理
-  public List<Student> searchStudents() {
-    return studentRepository.findAllStudents();
+  /**
+   * 受講生情報一覧検索
+   *
+   * @return 受講生情報一覧(全件)
+   */
+  public List<StudentDetail> searchStudents() {
+    List<Student> students = studentRepository.findAllStudents();
+    List<StudentCourse> studentCourses = studentRepository.findAllStudentCourse();
+    return studentConverter.convertStudentDetails(students, studentCourses);
 
   }
 
-  // 受講生情報と紐づく受講コース情報を取得処理
+  /**
+   * 受講生詳細検索
+   * 受講生と紐づく受講コース情報を取得
+   *
+   * @param id 受講生ID
+   * @return 受講生詳細
+   */
   public StudentDetail searchStudent(Integer id) {
     Student student = studentRepository.findStudentById(id);
     List<StudentCourse> studentCourses  = studentRepository.findCoursesByStudentId(id);
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-    studentDetail.setStudentCourses(studentCourses);
-    return studentDetail;
+    return new StudentDetail(student,studentCourses);
   }
 
-  // 受講コース情報全件取得処理
-  public List<StudentCourse> searchStudentCourses() {
-    return  studentRepository.findAllStudentCourse();
-  }
-
-  // 受講生詳細登録処理
+  /**
+   * 受講生詳細登録
+   *
+   * @param studentDetail 受講生詳細
+   * @return 受講生詳細
+   */
   @Transactional
-  public void registerStudent(StudentDetail studentDetail) {
+  public StudentDetail registerStudent(StudentDetail studentDetail) {
     studentRepository.registerStudent(studentDetail.getStudent());
     List<StudentCourse> studentCourses = studentDetail.getStudentCourses();
     boolean hasValidCourse = studentCourses.stream()
@@ -59,11 +75,17 @@ public class StudentService {
         studentRepository.registerStudentCourse(studentCourse);
       }
     }
+    return studentDetail;
   }
 
-  // 受講生詳細更新処理
+  /**
+   * 受講生詳細更新
+   *
+   * @param studentDetail 受講生詳細
+   * @return 受講生詳細
+   */
   @Transactional
-  public void updateStudent(StudentDetail studentDetail) {
+  public StudentDetail updateStudent(StudentDetail studentDetail) {
     studentRepository.updateStudent(studentDetail.getStudent());
     // 受講コース情報更新を行う
     for (StudentCourse studentCourse : studentDetail.getStudentCourses()) {
@@ -72,9 +94,16 @@ public class StudentService {
       studentCourse.setExpectedEndDate(newExpectedEndDate);
       studentRepository.updateStudentCourse(studentCourse);
     }
+    return studentDetail;
   }
 
-  // 受講コース情報に応じて終了予定日を再計算する処理
+  /**
+   * 受講コース情報に応じて終了予定日を再計算する処理
+   *
+   * @param courseName コース名
+   * @param startDate 開始日
+   * @return 終了予定日
+   */
   public LocalDate calculateEndDate(String courseName, LocalDate startDate) {
     switch (courseName) {
       case "HTML/CSS/JavaScriptコース":
@@ -91,22 +120,34 @@ public class StudentService {
     }
   }
 
-  // 受講生情報削除処理
+  /**
+   * 受講生情報削除
+   *
+   * @param id 受講生ID
+   * @return Student
+   */
   @Transactional
-  public void deleteStudent(Integer id) {
-    int deleted = studentRepository.logicalDeleteStudent(id);
-    if (deleted == 0) {
+  public Student deleteStudent(Integer id) {
+    int deletedCount = studentRepository.logicalDeleteStudent(id);
+    if (deletedCount == 0) {
       throw new IllegalArgumentException("指定されたIDの受講生が存在しません：" + id);
     }
+    return studentRepository.findStudentById(id);
   }
 
-  // 受講生情報復元処理
+  /**
+   * 受講生情報復元
+   *
+   * @param id 受講生ID
+   * @return Student
+   */
   @Transactional
-  public void restoreStudent(Integer id) {
-    int restored = studentRepository.restoreStudent(id);
-    if (restored == 0) {
+  public Student restoreStudent(Integer id) {
+    int restoredCount = studentRepository.restoreStudent(id);
+    if (restoredCount == 0) {
       throw new IllegalArgumentException("指定されたIDの受講生が存在しません：" + id);
     }
+    return  studentRepository.findStudentById(id);
   }
 
 }
