@@ -1,9 +1,12 @@
 package raisetech.student_management.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +23,7 @@ import raisetech.student_management.service.StudentService;
  * 受講生の検索や登録、更新などを行うREST APIとして実行されるController
  */
 @RestController
+@Validated
 public class StudentController {
 
   private final StudentService studentService;
@@ -60,7 +64,7 @@ public class StudentController {
    * @return 受講生詳細
    */
   @PostMapping("/student")
-  public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<StudentDetail> registerStudent(@Valid @RequestBody StudentDetail studentDetail) {
       StudentDetail saved = studentService.registerStudent(studentDetail);
       return ResponseEntity.ok(saved);
   }
@@ -73,7 +77,7 @@ public class StudentController {
    * @return 受講生詳細
    */
   @GetMapping("/student/{id}")
-  public StudentDetail getStudent(@PathVariable Integer id) {
+  public StudentDetail getStudent(@PathVariable @Min(1) Integer id) {
     return studentService.searchStudent(id);
   }
 
@@ -84,7 +88,7 @@ public class StudentController {
    * @return 受講生詳細
    */
   @PutMapping("/student/{id}")
-  public ResponseEntity<StudentDetail> updateStudent(@PathVariable Integer id, @RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<StudentDetail> updateStudent(@PathVariable @Min(1) Integer id, @Valid @RequestBody StudentDetail studentDetail) {
     studentDetail.getStudent().setId(id);
     StudentDetail updated = studentService.updateStudent(studentDetail);
     return ResponseEntity.ok(updated);
@@ -97,7 +101,7 @@ public class StudentController {
    * @return Student
    */
   @PatchMapping("/students/{id}/delete")
-  public ResponseEntity<Student> deleteStudent(@PathVariable Integer id) {
+  public ResponseEntity<Student> deleteStudent(@PathVariable @Min(1) Integer id) {
       Student deleted = studentService.deleteStudent(id);
     return ResponseEntity.ok(deleted);
   }
@@ -109,7 +113,7 @@ public class StudentController {
    * @return Student
    */
   @PatchMapping("/students/{id}/restore")
-  public ResponseEntity<Student> restoreStudent(@PathVariable Integer id) {
+  public ResponseEntity<Student> restoreStudent(@PathVariable @Min(1) Integer id) {
       Student restored = studentService.restoreStudent(id);
     return ResponseEntity.ok(restored);
   }
