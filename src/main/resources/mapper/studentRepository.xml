@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- Mapperとxmlのマッピング -->
+<mapper namespace="raisetech.student_management.repository.StudentRepository">
+
+  <!-- 受講生情報を全件検索する -->
+  <select id="findAllStudents" resultType="Student">
+    SELECT * FROM students
+  </select>
+
+  <!-- 受講生情報を検索する -->
+  <select id="findStudentById" resultType="Student">
+    SELECT * FROM students WHERE id = #{id}
+  </select>
+
+  <!-- 受講コース情報を全件検索する -->
+  <select id="findAllStudentCourse" resultType="StudentCourse">
+    SELECT * FROM students_courses
+  </select>
+
+  <!-- 受講生IDに紐づく受講コース情報を検索する -->
+  <select id="findCoursesByStudentId" resultType="StudentCourse">
+    SELECT * FROM students_courses WHERE student_id = #{studentId}
+  </select>
+
+  <!-- 受講生情報を登録する -->
+  <insert id="registerStudent" parameterType="Student" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO students
+      (name, name_kana, nickname, email, area, birth_date, gender, remark, deleted)
+    VALUES
+      (#{name}, #{nameKana}, #{nickname}, #{email}, #{area}, #{birthDate}, #{gender}, #{remark}, false)
+  </insert>
+
+  <!-- 受講コース情報を登録する -->
+  <insert id="registerStudentCourse" parameterType="StudentCourse" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO students_courses
+      (student_id, course_name, start_date, expected_end_date)
+    VALUES
+      (#{studentId}, #{courseName}, #{startDate}, #{expectedEndDate})
+  </insert>
+
+  <!-- 受講生情報を更新する -->
+  <update id="updateStudent" parameterType="Student">
+    UPDATE students
+    SET
+      name = #{name}, name_kana = #{nameKana}, nickname = #{nickname}, email = #{email},
+      area = #{area}, birth_date = #{birthDate}, gender = #{gender}, remark = #{remark}, deleted = #{deleted}
+    WHERE id = #{id}
+  </update>
+
+  <!-- 受講コース情報を更新する -->
+  <update id="updateStudentCourse" parameterType="StudentCourse">
+    UPDATE students_courses
+    SET
+      course_name = #{courseName}, expected_end_date = #{expectedEndDate}
+    WHERE
+      id = #{id} AND student_id = #{studentId}
+  </update>
+
+  <!-- 受講生情報を論理削除する -->
+  <update id="logicalDeleteStudent" parameterType="int">
+    UPDATE students SET deleted = true WHERE id = #{id}
+  </update>
+
+  <!-- 受講生情報を復元する -->
+  <update id="restoreStudent" parameterType="int">
+    UPDATE students SET deleted = false WHERE id = #{id}
+  </update>
+
+</mapper>
