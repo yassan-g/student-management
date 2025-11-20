@@ -8,6 +8,7 @@ import raisetech.student_management.controller.converter.StudentConverter;
 import raisetech.student_management.data.Student;
 import raisetech.student_management.data.StudentCourse;
 import raisetech.student_management.domain.StudentDetail;
+import raisetech.student_management.exception.StudentNotFoundException;
 import raisetech.student_management.repository.StudentRepository;
 
 /**
@@ -46,6 +47,9 @@ public class StudentService {
    */
   public StudentDetail searchStudent(Integer id) {
     Student student = studentRepository.findStudentById(id);
+    if (student == null) {
+      throw new StudentNotFoundException("指定されたIDの受講生が存在しません：id=" + id);
+    }
     List<StudentCourse> studentCourses  = studentRepository.findCoursesByStudentId(id);
     return new StudentDetail(student,studentCourses);
   }
@@ -59,21 +63,12 @@ public class StudentService {
   @Transactional
   public StudentDetail registerStudent(StudentDetail studentDetail) {
     studentRepository.registerStudent(studentDetail.getStudent());
-    List<StudentCourse> studentCourses = studentDetail.getStudentCourses();
-    boolean hasValidCourse = studentCourses.stream()
-        .anyMatch(c -> c.getCourseName() != null && !c.getCourseName().isBlank());
-    if (!hasValidCourse) {
-      throw new IllegalArgumentException("最低1件の受講コース情報（コース名）が必要です。");
-    }
     // 受講コース情報登録を行う
     for (StudentCourse studentCourse : studentDetail.getStudentCourses()) {
-      // 空欄チェック（必要最低限の項目が入力されているか）
-      if (studentCourse.getCourseName() != null && !studentCourse.getCourseName().isBlank()) {
         studentCourse.setStudentId(studentDetail.getStudent().getId());
         studentCourse.setStartDate(LocalDate.now());
         studentCourse.setExpectedEndDate(calculateEndDate(studentCourse.getCourseName(),studentCourse.getStartDate()));
         studentRepository.registerStudentCourse(studentCourse);
-      }
     }
     return studentDetail;
   }
@@ -130,7 +125,7 @@ public class StudentService {
   public Student deleteStudent(Integer id) {
     int deletedCount = studentRepository.logicalDeleteStudent(id);
     if (deletedCount == 0) {
-      throw new IllegalArgumentException("指定されたIDの受講生が存在しません：" + id);
+      throw new StudentNotFoundException("指定されたIDの受講生が存在しません：id=" + id);
     }
     return studentRepository.findStudentById(id);
   }
@@ -145,7 +140,7 @@ public class StudentService {
   public Student restoreStudent(Integer id) {
     int restoredCount = studentRepository.restoreStudent(id);
     if (restoredCount == 0) {
-      throw new IllegalArgumentException("指定されたIDの受講生が存在しません：" + id);
+      throw new StudentNotFoundException("指定されたIDの受講生が存在しません：id=" + id);
     }
     return  studentRepository.findStudentById(id);
   }
