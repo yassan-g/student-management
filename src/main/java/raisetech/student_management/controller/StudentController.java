@@ -118,12 +118,4 @@ public class StudentController {
     return ResponseEntity.ok(restored);
   }
 
-  /**
-   * テスト用に強制的に 500 Internal Server Error を返すエンドポイント
-   */
-  @GetMapping("/error")
-  public StudentDetail triggerError() {
-    throw new RuntimeException("テスト用に強制エラーを発生させました");
-  }
-
 }
