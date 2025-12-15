@@ -1,5 +1,9 @@
 package raisetech.student_management.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.util.ArrayList;
@@ -24,6 +28,7 @@ import raisetech.student_management.service.StudentService;
  */
 @RestController
 @Validated
+@Tag(name = "Student API", description = "受講生の検索や登録、更新、削除、復元を行うAPI")
 public class StudentController {
 
   private final StudentService studentService;
@@ -37,6 +42,12 @@ public class StudentController {
    *
    * @return 受講生情報一覧(全件)
    */
+  @Operation(
+      summary = "受講生情報一覧検索",
+      description = "受講生情報を全件取得します",
+      responses = {
+          @ApiResponse(responseCode = "200", description = "正常に取得できました")
+  })
   @GetMapping("/students")
   public List<StudentDetail> getStudents() {
     return studentService.searchStudents();
@@ -63,6 +74,13 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 受講生詳細
    */
+  @Operation(
+      summary = "受講生詳細登録",
+      description = "受講生詳細を新規登録します",
+      responses = {
+          @ApiResponse(responseCode = "200", description = "登録成功"),
+          @ApiResponse(responseCode = "400", ref = "BadRequest")
+  })
   @PostMapping("/student")
   public ResponseEntity<StudentDetail> registerStudent(@Valid @RequestBody StudentDetail studentDetail) {
       StudentDetail saved = studentService.registerStudent(studentDetail);
@@ -76,8 +94,15 @@ public class StudentController {
    * @param id 受講生ID
    * @return 受講生詳細
    */
+  @Operation(
+      summary = "受講生詳細検索",
+      description = "受講生と紐づく受講コース情報を取得します",
+      responses = {
+          @ApiResponse(responseCode = "200", description = "正常に取得できました"),
+          @ApiResponse(responseCode = "404", ref = "NotFound")
+  })
   @GetMapping("/student/{id}")
-  public StudentDetail getStudent(@PathVariable @Min(1) Integer id) {
+  public StudentDetail getStudent(@Parameter(description = "受講生ID", required = true) @PathVariable @Min(1) Integer id) {
     return studentService.searchStudent(id);
   }
 
@@ -87,8 +112,16 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 受講生詳細
    */
+  @Operation(
+      summary = "受講生詳細更新",
+      description = "受講生詳細を更新します",
+      responses = {
+          @ApiResponse(responseCode = "200", description = "更新成功"),
+          @ApiResponse(responseCode = "400", ref = "BadRequest")
+  })
   @PutMapping("/student/{id}")
-  public ResponseEntity<StudentDetail> updateStudent(@PathVariable @Min(1) Integer id, @Valid @RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<StudentDetail> updateStudent(@Parameter(description = "受講生ID", required = true) @PathVariable @Min(1) Integer id,
+      @Valid @RequestBody StudentDetail studentDetail) {
     studentDetail.getStudent().setId(id);
     StudentDetail updated = studentService.updateStudent(studentDetail);
     return ResponseEntity.ok(updated);
@@ -100,8 +133,15 @@ public class StudentController {
    * @param id 受講生ID
    * @return Student
    */
+  @Operation(
+      summary = "受講生情報削除",
+      description = "受講生情報を削除します（論理削除）",
+      responses = {
+          @ApiResponse(responseCode = "200", description = "削除成功"),
+          @ApiResponse(responseCode = "404", ref = "NotFound")
+  })
   @PatchMapping("/students/{id}/delete")
-  public ResponseEntity<Student> deleteStudent(@PathVariable @Min(1) Integer id) {
+  public ResponseEntity<Student> deleteStudent(@Parameter(description = "受講生ID", required = true) @PathVariable @Min(1) Integer id) {
       Student deleted = studentService.deleteStudent(id);
     return ResponseEntity.ok(deleted);
   }
@@ -112,8 +152,15 @@ public class StudentController {
    * @param id 受講生ID
    * @return Student
    */
+  @Operation(
+      summary = "受講者情報復元",
+      description = "削除済みの受講生情報を復元します",
+      responses = {
+          @ApiResponse(responseCode = "200", description = "復元成功"),
+          @ApiResponse(responseCode = "404", ref = "NotFound")
+  })
   @PatchMapping("/students/{id}/restore")
-  public ResponseEntity<Student> restoreStudent(@PathVariable @Min(1) Integer id) {
+  public ResponseEntity<Student> restoreStudent(@Parameter(description = "受講生ID", required = true) @PathVariable @Min(1) Integer id) {
       Student restored = studentService.restoreStudent(id);
     return ResponseEntity.ok(restored);
   }
