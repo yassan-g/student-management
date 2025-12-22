@@ -35,7 +35,6 @@ public class StudentService {
     List<Student> students = studentRepository.findAllStudents();
     List<StudentCourse> studentCourses = studentRepository.findAllStudentCourse();
     return studentConverter.convertStudentDetails(students, studentCourses);
-
   }
 
   /**
